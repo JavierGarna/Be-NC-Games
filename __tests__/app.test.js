@@ -9,7 +9,7 @@ beforeEach(() => {
 });
 
 afterAll(() => {
-    if (db.end) db.end();
+    db.end();
 });
 
 describe("GET /api/categories", () => {
@@ -34,7 +34,6 @@ describe("GET /api/categories", () => {
         .get("/api/cateogries")
         .expect(404)
         .then((response) => {
-            console.log(response.body)
             expect(response.body.msg).toBe("not found");
         })
     });
