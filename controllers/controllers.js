@@ -8,7 +8,8 @@ exports.getCategories = (req, res, next) => {
 
 exports.getReview = (req, res, next) => {
     const { review_id } = req.params;
-    fetchReview(review_id).then((review) => {
+    const { comment_count } = req.query;
+    fetchReview(review_id, comment_count).then((review) => {
         res.status(200).send({ review });
     }).catch((err) => {
         next(err);

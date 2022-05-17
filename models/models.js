@@ -8,12 +8,21 @@ exports.fetchCategories = () => {
     })
 };
 
-exports.fetchReview = (review_id) => {
+exports.fetchReview = (review_id, comment_count = 0) => {
     const queryStr = `SELECT * FROM reviews WHERE review_id = ${review_id}`;
+    const queryComments = `SELECT * FROM comments`
+    db.query(queryComments).then((response) => {
+        for (let i = 0; i < response.rows.length; i++) {
+            if (response.rows[i].review_id == review_id) {
+                comment_count++;
+            };
+        };
+    });
     return db.query(queryStr).then((response) => {
         if(!response.rows.length) {
             return Promise.reject({ status: 404, msg: "not found"})
         }
+        response.rows[0].comment_count = comment_count;
         return response.rows[0];
     })
 };
