@@ -1,4 +1,4 @@
-const { fetchCategories, fetchReview } = require("../models/models")
+const { fetchCategories, fetchReview, fetchPatchReview } = require("../models/models")
 
 exports.getCategories = (req, res, next) => {
     fetchCategories().then((categories) => {
@@ -13,4 +13,14 @@ exports.getReview = (req, res, next) => {
     }).catch((err) => {
         next(err);
     })
-}
+};
+
+exports.patchReview = (req, res, next) => {
+    const { review_id } = req.params;
+    const { inc_votes } = req.body;
+    fetchPatchReview(review_id, inc_votes).then((review) => {
+        res.status(200).send({ review })
+    }).catch((err) => {
+        next(err);
+    })
+};

@@ -75,4 +75,53 @@ describe("GET /api/reviews/:review_id", () => {
             expect(response.body.msg).toBe("bad request");
         })
     });
-})
+});
+
+describe("PATCH /api/reviews/:review_id", () => {
+    test('200: responds with an updated review depending on inc_votes', () => {
+        return request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: 3})
+        .expect(200)
+        .then((response) => {
+            expect(response.body.review).toMatchObject({
+                review_id: 1,
+                title: 'Agricola',
+                review_body: 'Farmyard fun!',
+                designer: 'Uwe Rosenberg',
+                review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                votes: 4,
+                category: 'euro game',
+                owner: 'mallionaire',
+                created_at: "2021-01-18T10:00:20.514Z"
+            });
+        });
+    });
+    test('404: responds with a not found message when passed an id not stored', () => {
+        return request(app)
+        .patch("/api/reviews/99999")
+        .send({ inc_votes: 1})
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("not found");
+        });
+    });
+    test('400: responds with a bad request message when passed not a number in the id', () => {
+        return request(app)
+        .patch("/api/reviews/amigo")
+        .send({ inc_votes: 1})
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        })
+    });
+    test('400: responds with a bad request message when passed not a number in inc_votes', () => {
+        return request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: "uno"})
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        })
+    });
+});
