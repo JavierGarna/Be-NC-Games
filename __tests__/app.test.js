@@ -125,3 +125,23 @@ describe("PATCH /api/reviews/:review_id", () => {
         })
     });
 });
+
+describe("GET /api/users", () => {
+    test('200: responds with an array of objects with the properties username, name and avatar_url', () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+            expect(response.body.users).toHaveLength(4);
+            response.body.users.forEach((user) => {
+                expect(user).toEqual(
+                    expect.objectContaining({
+                        username: expect.any(String),
+                        name: expect.any(String),
+                        avatar_url: expect.any(String)
+                    })
+                )
+            })
+        })
+    });
+});
