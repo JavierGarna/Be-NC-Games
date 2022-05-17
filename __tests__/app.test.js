@@ -84,7 +84,7 @@ describe("PATCH /api/reviews/:review_id", () => {
         .send({ inc_votes: 3})
         .expect(200)
         .then((response) => {
-            expect(response.body.review).toEqual({
+            expect(response.body.review).toMatchObject({
                 review_id: 1,
                 title: 'Agricola',
                 review_body: 'Farmyard fun!',
