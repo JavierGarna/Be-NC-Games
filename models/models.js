@@ -33,3 +33,11 @@ exports.fetchPatchReview = (review_id, inc_votes) => {
         return response.rows[0];
     });
 };
+
+exports.fetchUsers = () => {
+    const queryStr = "SELECT * FROM users";
+
+    return db.query(queryStr).then((response) => {
+        return response.rows;
+    });
+};
