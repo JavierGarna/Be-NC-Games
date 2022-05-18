@@ -48,11 +48,10 @@ exports.fetchReviews = () => {
 exports.fetchReviewComments = (review_id) => {
     const queryStr = `SELECT * FROM comments WHERE review_id = $1`
     const queryStr2 = `SELECT * FROM reviews WHERE review_id = $1`
+    const getComments = db.query(queryStr, [review_id])
+    const checkArticleExists = db.query(queryStr2, [review_id])
 
-    return Promise.all([
-        db.query(queryStr, [review_id]),
-        db.query(queryStr2, [review_id])
-    ]).then((promiseArray) => {
+    return Promise.all([getComments,checkArticleExists]).then((promiseArray) => {
         if(!promiseArray[1].rows.length) {
             return Promise.reject({ status: 404, msg: "not found"})
         }
