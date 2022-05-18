@@ -1,13 +1,5 @@
 const db = require("../db/connection");
 
-exports.fetchCategories = () => {
-    const queryStr = "SELECT * FROM categories";
-
-    return db.query(queryStr).then((response) => {
-        return response.rows;
-    })
-};
-
 exports.fetchReview = (review_id) => {
     const queryStr = `
     SELECT reviews.*, COUNT(comments.comment_id)::int AS comment_count 
@@ -37,14 +29,6 @@ exports.fetchPatchReview = (review_id, inc_votes) => {
             response.rows[0].votes += inc_votes;
         }
         return response.rows[0];
-    });
-};
-
-exports.fetchUsers = () => {
-    const queryStr = "SELECT * FROM users";
-
-    return db.query(queryStr).then((response) => {
-        return response.rows;
     });
 };
 

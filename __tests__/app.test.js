@@ -43,20 +43,32 @@ describe("GET /api/categories", () => {
 describe("GET /api/reviews/:review_id", () => {
     test('200: responds with a review object with the passed id', () => {
         return request(app)
-        .get("/api/reviews/2")
+        .get("/api/reviews/1")
         .expect(200)
         .then(({ body }) => {
             const { review } = body;
             expect(review).toEqual({
-                review_id: 2,
-                title: 'Jenga',
-                review_body: 'Fiddly fun for all the family',
-                designer: 'Leslie Scott',
+                review_id: 1,
+                title: 'Agricola',
+                review_body: 'Farmyard fun!',
+                designer: 'Uwe Rosenberg',
                 review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-                votes: 5,
-                category: 'dexterity',
-                owner: 'philippaclaire9',
-                created_at: "2021-01-18T10:01:41.251Z",
+                votes: 1,
+                category: 'euro game',
+                owner: 'mallionaire',
+                created_at: "2021-01-18T10:00:20.514Z",
+                comment_count: 0
+            })
+        })
+    });
+    test('200: responds with the correct review object with the correct comment_count', () => {
+        return request(app)
+        .get("/api/reviews/2")
+        .expect(200)
+        .then(({ body }) => {
+            const { review } = body;
+            expect(review).toMatchObject({
+                review_id: 2,
                 comment_count: 3
             })
         })
@@ -156,7 +168,6 @@ describe("GET /api/reviews", () => {
         .then((response) => {
             expect(response.body.reviews).toHaveLength(13);
             response.body.reviews.forEach((review) => {
-                console.log(review)
                 expect(review).toEqual(
                     expect.objectContaining({
                         owner: expect.any(String),
@@ -166,11 +177,25 @@ describe("GET /api/reviews", () => {
                         review_img_url: expect.any(String),
                         created_at: expect.any(String),
                         votes: expect.any(Number),
-                        comment_count: expect.any(Number)
                     })
                 )
             })
             expect(response.body.reviews).toBeSorted({ key: "created_at", descending: true})
+        });
+    });
+    test('200: responds with a reviews array containing comment_count', () => {
+        return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then((response) => {
+            expect(response.body.reviews).toHaveLength(13);
+            response.body.reviews.forEach((review) => {
+                expect(review).toEqual(
+                    expect.objectContaining({
+                        comment_count: expect.any(Number)
+                    })
+                );
+            });
         });
     });
 });
