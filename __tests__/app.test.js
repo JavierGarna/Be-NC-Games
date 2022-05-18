@@ -199,3 +199,50 @@ describe("GET /api/reviews", () => {
         });
     });
 });
+
+describe("GET /api/reviews/:review_id/comments", () => {
+    test('200: responds with an array of comments for the given review_id', () => {
+        return request(app)
+        .get("/api/reviews/2/comments")
+        .expect(200)
+        .then((response) => {
+            expect(response.body.comments).toHaveLength(3);
+            response.body.comments.forEach((comment) => {
+                expect(comment).toEqual(
+                    expect.objectContaining({
+                        comment_id: expect.any(Number),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        review_id: expect.any(Number)
+                    })
+                )
+            })
+        })
+    });
+    test('200: responds with an empty when the review_id has no comments', () => {
+        return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(200)
+        .then((response) => {
+            expect(response.body.comments).toEqual([]);
+        })
+    });
+    test('404: responds with a not found message when passed an id not found', () => {
+        return request(app)
+        .get("/api/reviews/99999/comments")
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("not found");
+        })
+    });
+    test('400: responds with a bad request message when passed a wrong id', () => {
+        return request(app)
+        .get("/api/reviews/amigo/comments")
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        })
+    });
+})

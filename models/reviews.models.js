@@ -44,3 +44,19 @@ exports.fetchReviews = () => {
         return response.rows;
     });
 };
+
+exports.fetchReviewComments = (review_id) => {
+    const queryStr = `SELECT * FROM comments WHERE review_id = $1`
+
+    return db.query(queryStr, [review_id]).then((response) => {
+        if(!response.rows.length) {
+            return db.query(`SELECT * FROM reviews WHERE review_id = $1`, [review_id]).then((response) => {
+                if(!response.rows.length) {
+                    return Promise.reject({ status: 404, msg: "not found"})
+                };
+                return [];
+            });
+        }
+        return response.rows;
+    });
+};
