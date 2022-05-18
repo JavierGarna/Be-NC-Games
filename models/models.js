@@ -9,8 +9,14 @@ exports.fetchCategories = () => {
 };
 
 exports.fetchReview = (review_id) => {
-    const queryStr = `SELECT * FROM reviews WHERE review_id = ${review_id}`;
-    return db.query(queryStr).then((response) => {
+    const queryStr = `
+    SELECT reviews.*, COUNT(comments.comment_id)::int AS comment_count 
+    FROM reviews
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id;`
+
+    return db.query(queryStr, [review_id]).then((response) => {
         if(!response.rows.length) {
             return Promise.reject({ status: 404, msg: "not found"})
         }
