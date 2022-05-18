@@ -1,4 +1,4 @@
-const { fetchCategories, fetchReview, fetchPatchReview, fetchUsers } = require("../models/models")
+const { fetchCategories, fetchReview, fetchPatchReview, fetchUsers, fetchReviews } = require("../models/models")
 
 exports.getCategories = (req, res, next) => {
     fetchCategories().then((categories) => {
@@ -29,4 +29,10 @@ exports.getUsers = (req, res, next) => {
     fetchUsers().then((users) => {
         res.status(200).send({ users })
     })
+};
+
+exports.getReviews = (req, res, next) => {
+    fetchReviews().then((reviews) => {
+        res.status(200).send({ reviews });
+    });
 };

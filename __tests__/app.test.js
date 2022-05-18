@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+require("jest-sorted")
 
 beforeEach(() => {
     return seed(testData);
@@ -37,7 +38,7 @@ describe("GET /api/categories", () => {
             expect(response.body.msg).toBe("not found");
         })
     });
-})
+});
 
 describe("GET /api/reviews/:review_id", () => {
     test('200: responds with a review object with the passed id', () => {
@@ -144,5 +145,32 @@ describe("GET /api/users", () => {
                 )
             })
         })
+    });
+});
+
+describe("GET /api/reviews", () => {
+    test('200: responds with a reviews array containing the correct properties', () => {
+        return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then((response) => {
+            expect(response.body.reviews).toHaveLength(13);
+            response.body.reviews.forEach((review) => {
+                console.log(review)
+                expect(review).toEqual(
+                    expect.objectContaining({
+                        owner: expect.any(String),
+                        title: expect.any(String),
+                        review_id: expect.any(Number),
+                        category: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number)
+                    })
+                )
+            })
+            expect(response.body.reviews).toBeSorted({ key: "created_at", descending: true})
+        });
     });
 });

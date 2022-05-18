@@ -47,3 +47,16 @@ exports.fetchUsers = () => {
         return response.rows;
     });
 };
+
+exports.fetchReviews = () => {
+    const queryStr = `
+    SELECT reviews.*, COUNT(comments.comment_id)::int AS comment_count 
+    FROM reviews
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    GROUP BY reviews.review_id
+    ORDER BY created_at DESC;`
+
+    return db.query(queryStr).then((response) => {
+        return response.rows;
+    });
+};
