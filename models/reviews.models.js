@@ -47,16 +47,19 @@ exports.fetchReviews = () => {
 
 exports.fetchReviewComments = (review_id) => {
     const queryStr = `SELECT * FROM comments WHERE review_id = $1`
+    const queryStr2 = `SELECT * FROM reviews WHERE review_id = $1`
 
-    return db.query(queryStr, [review_id]).then((response) => {
-        if(!response.rows.length) {
-            return db.query(`SELECT * FROM reviews WHERE review_id = $1`, [review_id]).then((response) => {
-                if(!response.rows.length) {
-                    return Promise.reject({ status: 404, msg: "not found"})
-                };
-                return [];
-            });
-        }
-        return response.rows;
-    });
+    return Promise.all([
+        db.query(queryStr, [review_id]).then((response) => {
+            return response.rows;
+        }),
+        db.query(queryStr2, [review_id]).then((response) => {
+            if (!response.rows.length) {
+                return Promise.reject({ status: 404, msg: "not found"})
+            }
+            return response.rows
+        })
+    ]).then((response) => {
+        return response[0]
+    })
 };
