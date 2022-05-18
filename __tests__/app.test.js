@@ -40,7 +40,7 @@ describe("GET /api/categories", () => {
 })
 
 describe("GET /api/reviews/:review_id", () => {
-    test('200: responds with a review object with the passed id', () => {
+    test.only('200: responds with a review object with the passed id', () => {
         return request(app)
         .get("/api/reviews/2")
         .expect(200)

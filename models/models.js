@@ -8,21 +8,19 @@ exports.fetchCategories = () => {
     })
 };
 
-exports.fetchReview = (review_id, comment_count = 0) => {
-    const queryStr = `SELECT * FROM reviews WHERE review_id = ${review_id}`;
-    const queryComments = `SELECT * FROM comments`
-    db.query(queryComments).then((response) => {
-        for (let i = 0; i < response.rows.length; i++) {
-            if (response.rows[i].review_id == review_id) {
-                comment_count++;
-            };
-        };
-    });
-    return db.query(queryStr).then((response) => {
+exports.fetchReview = (review_id) => {
+    const queryStr = `
+    SELECT reviews.*, COUNT(comments.comment_id)::int AS comment_count 
+    FROM reviews
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id;`
+
+    return db.query(queryStr, [review_id]).then((response) => {
         if(!response.rows.length) {
             return Promise.reject({ status: 404, msg: "not found"})
         }
-        response.rows[0].comment_count = comment_count;
+        console.log(response.rows)
         return response.rows[0];
     })
 };
