@@ -1,4 +1,4 @@
-const { fetchReview, fetchPatchReview, fetchReviews, fetchReviewComments } = require("../models/reviews.models");
+const { fetchReview, fetchPatchReview, fetchReviews, fetchReviewComments, insertComment } = require("../models/reviews.models");
 
 exports.getReview = (req, res, next) => {
     const { review_id } = req.params;
@@ -29,6 +29,19 @@ exports.getReviewComments = (req, res, next) => {
     const { review_id } = req.params;
     fetchReviewComments(review_id).then((comments) => {
         res.status(200).send({ comments });
+    }).catch((err) => {
+        next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+    const { body, username:author } = req.body;
+    const { review_id } = req.params;
+    insertComment(review_id, body, author).then((comment) => {
+        if(comment === undefined) {
+            return Promise.reject({ status: 400, msg: "bad request"})
+        }
+        res.status(201).send({ comment })
     }).catch((err) => {
         next(err);
     });
