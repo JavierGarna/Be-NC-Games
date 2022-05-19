@@ -58,3 +58,15 @@ exports.fetchReviewComments = (review_id) => {
         return promiseArray[0].rows
     })
 };
+
+exports.insertComment = (review_id, body, author) => {
+    const queryStr2 = `INSERT INTO comments (review_id, body, author) VALUES ($1, $2, $3) RETURNING *`
+
+    return db.query(queryStr2, [review_id, body, author]).then((response) => {
+        return response.rows[0];
+    }).catch((err) => {
+        if (err.code === '23503') {
+            return Promise.reject({ status: 404, msg: "not found"})
+        }
+    });
+};

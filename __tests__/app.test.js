@@ -47,7 +47,7 @@ describe("GET /api/reviews/:review_id", () => {
         .expect(200)
         .then(({ body }) => {
             const { review } = body;
-            expect(review).toEqual({
+            expect(review).toMatchObject({
                 review_id: 1,
                 title: 'Agricola',
                 review_body: 'Farmyard fun!',
@@ -56,20 +56,18 @@ describe("GET /api/reviews/:review_id", () => {
                 votes: 1,
                 category: 'euro game',
                 owner: 'mallionaire',
-                created_at: "2021-01-18T10:00:20.514Z",
-                comment_count: 0
+                created_at: "2021-01-18T10:00:20.514Z"
             })
         })
     });
     test('200: responds with the correct review object with the correct comment_count', () => {
         return request(app)
-        .get("/api/reviews/2")
+        .get("/api/reviews/1")
         .expect(200)
         .then(({ body }) => {
             const { review } = body;
             expect(review).toMatchObject({
-                review_id: 2,
-                comment_count: 3
+                comment_count: 0
             })
         })
     });
@@ -245,4 +243,79 @@ describe("GET /api/reviews/:review_id/comments", () => {
             expect(response.body.msg).toBe("bad request");
         })
     });
-})
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+    test('201: responds with the posted comment', () => {
+        const newComment = {
+            body: 'This is an example!',
+            username: 'mallionaire',
+        };
+        return request(app)
+        .post('/api/reviews/1/comments')
+        .send(newComment)
+        .expect(201)
+        .then((response) => {
+            const { comment } = response.body;
+            expect(comment).toEqual({
+                author: "mallionaire",
+                body: "This is an example!",
+                comment_id: 7,
+                created_at: expect.any(String),
+                review_id: 1,
+                votes: 0,
+            });
+        });
+    });
+    test('404: review_id in path does not exist', () => {
+        const newComment = {
+            body: 'This is an example!',
+            username: 'mallionaire',
+        };
+        return request(app)
+        .post("/api/reviews/99999/comments")
+        .send(newComment)
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("not found");
+        });
+    });
+    test('404: username in path does not exist', () => {
+        const newComment = {
+            body: 'This is an example!',
+            username: 'JavierGarna',
+        };
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send(newComment)
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("not found");
+        });
+    });
+    test('400: newComment does not contain both mandatory keys', () => {
+        const newComment = {
+            body: 'This is an example!',
+        };
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send(newComment)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        });
+    });
+    test('400: review_id in path is not a number', () => {
+        const newComment = {
+            body: 'This is an example!',
+            username: 'JavierGarna',
+        };
+        return request(app)
+        .post("/api/reviews/hola/comments")
+        .send(newComment)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        });
+    });
+});
