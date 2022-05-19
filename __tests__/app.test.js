@@ -196,6 +196,66 @@ describe("GET /api/reviews", () => {
             });
         });
     });
+    test("200: should return a reviews array sorted by the passed query", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=owner")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.reviews).toBeSorted({
+                key: "owner",
+                descending: true
+            });
+        });
+    });
+    test("400: should return bad request message when given an invalid sort_by query string", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=somethingElse")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        });
+    });
+    test("200: should return a reviews array ordered by the passed query", () => {
+        return request(app)
+          .get("/api/reviews?order=asc")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.reviews).toBeSorted({
+                key: "created_at",
+                descending: false
+            });
+        });
+    });
+    test("400: should return bad request message when given an invalid order query string", () => {
+        return request(app)
+          .get("/api/reviews?order=somethingElse")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        });
+    });
+    test("200: should return a reviews array filtered by the passed category", () => {
+        return request(app)
+          .get("/api/reviews?category=euro game")
+          .expect(200)
+          .then((response) => {
+            response.body.reviews.forEach((review) => {
+                expect(review).toEqual(
+                    expect.objectContaining({
+                        category: 'euro game'
+                    })
+                );
+            });
+        });
+    });
+    test.only("404: should return a not found message when given a non-existent category", () => {
+        return request(app)
+          .get("/api/reviews?category=somethingElse")
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe("not found");
+        });
+    });
 });
 
 describe("GET /api/reviews/:review_id/comments", () => {
