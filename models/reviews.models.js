@@ -64,9 +64,5 @@ exports.insertComment = (review_id, body, author) => {
 
     return db.query(queryStr2, [review_id, body, author]).then((response) => {
         return response.rows[0];
-    }).catch((err) => {
-        if (err.code === '23503') {
-            return Promise.reject({ status: 404, msg: "not found"})
-        }
     });
 };

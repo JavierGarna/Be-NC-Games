@@ -294,8 +294,18 @@ describe("POST /api/reviews/:review_id/comments", () => {
         });
     });
     test('400: newComment does not contain both mandatory keys', () => {
+        const newComment = {};
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send(newComment)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        });
+    });
+    test('400: newComment does not contain one of the mandatory keys', () => {
         const newComment = {
-            body: 'This is an example!',
+            body: 'This is an example!'
         };
         return request(app)
         .post("/api/reviews/1/comments")
