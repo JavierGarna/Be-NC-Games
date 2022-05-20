@@ -424,3 +424,27 @@ describe("POST /api/reviews/:review_id/comments", () => {
         });
     });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+    test('204: should delete the given comment by comment_id and respond with a no content message', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+    });
+    test('404: responds with a not found message when comment_id in path doesn\'t exist', () => {
+        return request(app)
+        .delete("/api/comments/99999")
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("not found");
+        })
+    });
+    test('400: responds with a bad request message when comment_id in path is not a number', () => {
+        return request(app)
+        .delete("/api/comments/adios")
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        })
+    });
+})
