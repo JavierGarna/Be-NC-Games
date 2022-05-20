@@ -36,11 +36,12 @@ exports.fetchReviews = (sort_by, order = 'DESC', category) => {
     const validSortBy = ['title', 'designer', 'owner', 'review_body', 'category', 'created_at', 'votes'];
     const validOrder = ['ASC', 'DESC'];
     order = order.toUpperCase();
+    const array = [];
     let queryStr = `
     SELECT reviews.*, COUNT(comments.comment_id)::int AS comment_count 
     FROM reviews
     LEFT JOIN comments ON reviews.review_id = comments.review_id`
-    const array = [];
+    const queryStr2 = `SELECT * FROM categories WHERE slug = $1`
 
     if (!validOrder.includes(order)) {
         return Promise.reject( { status: 400, msg: "bad request"});
@@ -63,9 +64,27 @@ exports.fetchReviews = (sort_by, order = 'DESC', category) => {
         queryStr += ` ORDER BY created_at ${order};`
     }
 
-    return db.query(queryStr, array).then((response) => {
+    const getReviews = db.query(queryStr, array);
+    // const checkCategoryExists = db.query(queryStr2, array)
+    // if(category) {
+    //     return Promise.all([getReviews, checkCategoryExists]).then((promiseArray) => {
+    //         console.log(promiseArray.rows)
+    //         return (promiseArray.rows[0])
+    //     })
+    // } else {
+    //     return getReviews.then((response) => {
+    //         return response.rows;
+    //     })
+    // }
+
+    return getReviews.then((response) => {
         if (!response.rows.length) {
-            return Promise.reject({ status: 404, msg: "not found" });
+            return db.query(`SELECT * FROM categories WHERE slug = $1`, array).then((response) => {
+                if (!response.rows.length) {
+                    return Promise.reject({ status: 404, msg: "not found" });  
+                }
+                return [];
+            })
         }
         return response.rows;
     });
