@@ -4,8 +4,13 @@ const { getCategories } = require("./controllers/categories.controllers")
 const { getReview, patchReview, getReviews, getReviewComments, postComment } = require("./controllers/reviews.controllers")
 const { getUsers } = require("./controllers/users.controllers")
 const { deleteComment } = require("./controllers/comments.controllers")
+const endpoints = require("./endpoints.json")
 
 app.use(express.json());
+
+app.get("/api", (req, res) => {
+    res.status(200).send(endpoints);
+});
 
 app.get("/api/categories", getCategories);
 
