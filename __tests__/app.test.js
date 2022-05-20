@@ -181,6 +181,7 @@ describe("GET /api/reviews", () => {
             expect(response.body.reviews).toBeSorted({ key: "created_at", descending: true})
         });
     });
+
     test('200: responds with a reviews array containing comment_count', () => {
         return request(app)
         .get("/api/reviews")
@@ -191,6 +192,100 @@ describe("GET /api/reviews", () => {
                 expect(review).toEqual(
                     expect.objectContaining({
                         comment_count: expect.any(Number)
+                    })
+                );
+            });
+        });
+    });
+
+    test("200: should return a reviews array sorted by the passed query", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=owner")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.reviews).toBeSorted({
+                key: "owner",
+                descending: true
+            });
+        });
+    });
+
+    test("400: should return bad request message when given an invalid sort_by query string", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=somethingElse")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        });
+    });
+
+    test("200: should return a reviews array ordered by the passed query", () => {
+        return request(app)
+          .get("/api/reviews?order=asc")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.reviews).toBeSorted({
+                key: "created_at",
+                descending: false
+            });
+        });
+    });
+
+    test("400: should return bad request message when given an invalid order query string", () => {
+        return request(app)
+          .get("/api/reviews?order=somethingElse")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("bad request");
+        });
+    });
+
+    test("200: should return a reviews array filtered by the passed category", () => {
+        return request(app)
+          .get("/api/reviews?category=euro game")
+          .expect(200)
+          .then((response) => {
+            response.body.reviews.forEach((review) => {
+                expect(review).toEqual(
+                    expect.objectContaining({
+                        category: 'euro game'
+                    })
+                );
+            });
+        });
+    });
+
+    test("200: should return an empty reviews array when filtered by a category with no reviews", () => {
+        return request(app)
+          .get("/api/reviews?category=children\'s games")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.reviews).toEqual([])
+        });
+    });
+
+    test("404: should return a not found message when given a non-existent category", () => {
+        return request(app)
+          .get("/api/reviews?category=somethingElse")
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe("not found");
+        });
+    });
+
+    test("200: should return a reviews array filtered and ordered by the passed queries", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=owner&order=asc&category=euro game")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.reviews).toBeSorted({
+                key: "owner",
+                descending: false
+            });
+            response.body.reviews.forEach((review) => {
+                expect(review).toEqual(
+                    expect.objectContaining({
+                        category: 'euro game'
                     })
                 );
             });
