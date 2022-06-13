@@ -1,12 +1,13 @@
 const express = require("express");
 const app = express();
-const { getCategories } = require("./controllers/categories.controllers")
-const { getReview, patchReview, getReviews, getReviewComments, postComment } = require("./controllers/reviews.controllers")
-const { getUsers } = require("./controllers/users.controllers")
-const { deleteComment } = require("./controllers/comments.controllers")
-const endpoints = require("./endpoints.json")
+const { getCategories } = require("./controllers/categories.controllers");
+const { getReview, patchReview, getReviews, getReviewComments, postComment } = require("./controllers/reviews.controllers");
+const { getUsers } = require("./controllers/users.controllers");
+const { deleteComment } = require("./controllers/comments.controllers");
+const endpoints = require("./endpoints.json");
+const cors = require('cors');
 
-app.use(express.json());
+app.use(cors(), express.json());
 
 app.get("/api", (req, res) => {
     res.status(200).send(endpoints);
