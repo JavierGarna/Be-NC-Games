@@ -22,11 +22,11 @@ exports.fetchPatchReview = (review_id, inc_votes) => {
         if(!response.rows.length) {
             return Promise.reject({ status: 404, msg: "not found"})
         }
-        if(inc_votes) {
-            if(typeof inc_votes !== "number") {
-                return Promise.reject({ status: 400, msg: "bad request"})
-            }
-        }
+        // if(inc_votes) {
+        //     if(typeof inc_votes !== "number") {
+        //         return Promise.reject({ status: 400, msg: "bad request"})
+        //     }
+        // }
         return response.rows[0];
     });
 };
