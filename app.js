@@ -7,7 +7,8 @@ const { deleteComment } = require("./controllers/comments.controllers");
 const endpoints = require("./endpoints.json");
 const cors = require('cors');
 
-app.use(cors(), express.json());
+app.use(cors());
+app.use(express.json());
 
 app.get("/api", (req, res) => {
     res.status(200).send(endpoints);

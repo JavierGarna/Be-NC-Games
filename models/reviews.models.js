@@ -27,6 +27,7 @@ exports.fetchPatchReview = (review_id, inc_votes) => {
         //         return Promise.reject({ status: 400, msg: "bad request"})
         //     }
         // }
+        console.log(response.rows)
         return response.rows[0];
     });
 };
