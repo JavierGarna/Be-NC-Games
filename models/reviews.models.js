@@ -17,8 +17,8 @@ exports.fetchReview = (review_id) => {
 };
 
 exports.fetchPatchReview = (review_id, inc_votes) => {
-    const queryStr = `SELECT * FROM reviews WHERE review_id = ${review_id}`;
-    return db.query(queryStr).then((response) => {
+    const queryStr = `UPDATE reviews SET votes = votes + $2 WHERE review_id = $1 RETURNING *`;
+    return db.query(queryStr, [review_id, inc_votes]).then((response) => {
         if(!response.rows.length) {
             return Promise.reject({ status: 404, msg: "not found"})
         }
@@ -26,7 +26,6 @@ exports.fetchPatchReview = (review_id, inc_votes) => {
             if(typeof inc_votes !== "number") {
                 return Promise.reject({ status: 400, msg: "bad request"})
             }
-            response.rows[0].votes += inc_votes;
         }
         return response.rows[0];
     });
