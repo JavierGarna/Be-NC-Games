@@ -4,7 +4,6 @@
   },
   "GET /api/categories": {
     "description": "serves an array of all categories",
-    "queries": [],
     "exampleResponse": {
       "categories": [
         {
@@ -33,7 +32,6 @@
   },
   "GET /api/reviews/:review_id": {
     "description": "serves an object of the review with the given id",
-    "queries": [],
     "exampleResponse": {
       "review": {
         "review_id": 1,
@@ -51,7 +49,6 @@
   },
   "PATCH /api/reviews/:review_id": {
     "description": "serves an object of the review with the given id with updated votes",
-    "queries": [],
     "exampleResponse": {
       "review": {
         "review_id": 1,
@@ -69,7 +66,6 @@
   },
   "GET /api/users": {
     "description": "serves an array of all users",
-    "queries": [],
     "exampleResponse": {
       "users": [
         {
@@ -83,7 +79,6 @@
   },
   "GET /api/reviews/:review_id/comments": {
     "description": "serves an array of the comments of the review with the given id",
-    "queries": [],
     "exampleResponse": {
       "comments": [
         {
@@ -98,7 +93,6 @@
   },
   "POST /api/reviews/:review_id/comments": {
     "description": "serves an object of the posted comment",
-    "queries": [],
     "exampleResponse": {
       "comment": {
         "comment_id": 7,
